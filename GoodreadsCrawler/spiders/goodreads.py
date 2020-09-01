@@ -18,8 +18,20 @@ class GoodReadsSpider(scrapy.Spider):
                 yield scrapy.Request((response.request.url + "?page={page}").format(page=page_num), self.parse)
 
         # Crawling phase
-        print("Crawling page " + response.request.url)
-        print(response.selector.xpath("//a[@class='bookTitle']/@href").getall())
+        # Get list of books in current page
+        books_urls_list = response.selector.xpath("//a[@class='bookTitle']/@href").getall()
+        for book_url in books_urls_list:
+            # Call crawling task for each book item
+            yield scrapy.Request(response.urljoin(book_url), self.item_parse)
 
     def item_parse(self, response): # parser for a particularly single item
-        pass
+        book_meta = response.xpath("//div[@id='bookMeta']")
+        book_reviews = response.xpath("//div[@id='bookReviews']")
+        yield {
+            'id': response.xpath("//input[@id='book_id']/@value").get(),
+            'url': response.request.url,
+            'title': response.xpath("//h1[@id='bookTitle']/text()").get().strip(),
+            'author': response.xpath("//div[@id='bookAuthors']//a//span/text()").get(),
+            'rating': book_meta.xpath("//span[@itemprop='ratingValue']/text()").get().strip(),
+            'description': response.xpath("//div[@id='description']/span/text()")[-1].get()
+        }
