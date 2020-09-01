@@ -7,12 +7,18 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+from shutil import which
+
 BOT_NAME = 'GoodreadsCrawler'
 
 SPIDER_MODULES = ['GoodreadsCrawler.spiders']
 NEWSPIDER_MODULE = 'GoodreadsCrawler.spiders'
 
 FEED_EXPORT_ENCODING = 'utf-8'
+
+SELENIUM_DRIVER_NAME = 'chromium'
+SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
+SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

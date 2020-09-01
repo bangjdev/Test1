@@ -1,4 +1,5 @@
 import scrapy
+from scrapy_selenium import SeleniumRequest
 import urllib.parse as urlparse
 import json
 
@@ -16,14 +17,14 @@ class GoodReadsSpider(scrapy.Spider):
             final_page_url = response.selector.xpath("//a[contains(@href,'page=')]/@href").getall()[-2]
             total_pages_count = int(urlparse.parse_qs(urlparse.urlparse(final_page_url).query)['page'][0])
             for page_num in range(1, total_pages_count + 1):
-                yield scrapy.Request((response.request.url + "?page={page}").format(page=page_num), self.parse)
+                yield SeleniumRequest(url=(response.request.url + "?page={page}").format(page=page_num), callback=self.parse)
 
         # Crawling phase
         # Get list of books in current page
         books_urls_list = response.selector.xpath("//a[@class='bookTitle']/@href").getall()
         for book_url in books_urls_list:
             # Call crawling task for each book item
-            yield scrapy.Request(response.urljoin(book_url), self.item_parse)
+            yield SeleniumRequest(url=response.urljoin(book_url), callback=self.item_parse)
 
     def get_reviews_json(self, book_reviews):
         res = []
@@ -31,7 +32,7 @@ class GoodReadsSpider(scrapy.Spider):
             res += [{
                 'user_id': review.xpath("div/div/a/@href").get().split("/")[3].split("-")[0],
                 'name': review.xpath("div/div/a/@title").get(),
-                'content': review.xpath("div/div/div/div[contains(@class, 'reviewText')]/span/span/text()")[-1].get(),
+                'content': review.xpath("div/div/div/div[contains(@class, 'reviewText')]/span/span/text()")[-1].get().strip(),
                 'date': review.xpath("div/div/div/div/a[contains(@class, 'reviewDate')]/text()").get(),
             }]
 
