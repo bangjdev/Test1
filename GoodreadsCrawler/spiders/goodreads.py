@@ -1,5 +1,6 @@
 import scrapy
 import urllib.parse as urlparse
+import json
 
 
 class GoodReadsSpider(scrapy.Spider):
@@ -24,14 +25,38 @@ class GoodReadsSpider(scrapy.Spider):
             # Call crawling task for each book item
             yield scrapy.Request(response.urljoin(book_url), self.item_parse)
 
+    def get_reviews_json(self, book_reviews):
+        res = []
+        for review in book_reviews:
+            res += [{
+                'user_id': review.xpath("div/div/a/@href").get().split("/")[3].split("-")[0],
+                'name': review.xpath("div/div/a/@title").get(),
+                'content': review.xpath("div/div/div/div[contains(@class, 'reviewText')]/span/span/text()")[-1].get(),
+                'date': review.xpath("div/div/div/div/a[contains(@class, 'reviewDate')]/text()").get(),
+            }]
+
+        return res
+
+
     def item_parse(self, response): # parser for a particularly single item
+        # book_meta contains info about rating
         book_meta = response.xpath("//div[@id='bookMeta']")
-        book_reviews = response.xpath("//div[@id='bookReviews']")
+
+        # encode reviews data in json format
+        book_reviews = self.get_reviews_json(response.xpath("//div[@id='bookReviews']/div[@class='friendReviews elementListBrown']"))
+
+        # Sometimes book doesn't have description
+        try:
+            description = response.xpath("//div[@id='description']/span/text()")[-1].get()
+        except:
+            description = ""
+
         yield {
             'id': response.xpath("//input[@id='book_id']/@value").get(),
             'url': response.request.url,
             'title': response.xpath("//h1[@id='bookTitle']/text()").get().strip(),
             'author': response.xpath("//div[@id='bookAuthors']//a//span/text()").get(),
             'rating': book_meta.xpath("//span[@itemprop='ratingValue']/text()").get().strip(),
-            'description': response.xpath("//div[@id='description']/span/text()")[-1].get()
+            'description': description,
+            'reviews': book_reviews
         }

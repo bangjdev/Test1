@@ -14,3 +14,4 @@ class BookItem(scrapy.Item):
     author = scrapy.Field()
     rating = scrapy.Field()
     description = scrapy.Field()
+    reviews = scrapy.Field()
