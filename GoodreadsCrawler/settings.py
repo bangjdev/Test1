@@ -18,6 +18,8 @@ LOG_FILE = 'logs.txt'
 
 RETRY_TIMES = 100
 
+TARGET_URLS = ["https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh"]
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'GoodreadsCrawler (+http://www.yourdomain.com)'
 

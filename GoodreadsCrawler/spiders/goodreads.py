@@ -3,11 +3,12 @@ import urllib.parse as urlparse
 import json
 import requests
 import html
+from ..settings import TARGET_URLS
 
 
 class GoodReadsSpider(scrapy.Spider):
     name = "goodreads"
-    start_urls = ["https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh"]
+    start_urls = TARGET_URLS
     first_time_run = True
 
 
