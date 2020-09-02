@@ -31,7 +31,7 @@ class GoodReadsSpider(scrapy.Spider):
     # Send a get request and return as a Selector object
     def get_response(self, url):
         req = requests.get(url)
-        html_code = html.unescape(req.text[29:-5].encode().decode("unicode_escape").encode("utf-8").decode("utf-8"))
+        html_code = html.unescape(req.text[29:-5].encode().decode("unicode_escape").encode("latin1", "ignore").decode("utf-8"))
         response = scrapy.Selector(text=html_code)
         return response
 
