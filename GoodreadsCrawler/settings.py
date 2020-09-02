@@ -13,7 +13,10 @@ SPIDER_MODULES = ['GoodreadsCrawler.spiders']
 NEWSPIDER_MODULE = 'GoodreadsCrawler.spiders'
 
 FEED_EXPORT_ENCODING = 'utf-8'
+LOG_LEVEL = 'DEBUG'
+LOG_FILE = 'logs.txt'
 
+RETRY_TIMES = 100
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'GoodreadsCrawler (+http://www.yourdomain.com)'
