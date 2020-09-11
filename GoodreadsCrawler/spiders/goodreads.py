@@ -43,13 +43,20 @@ class GoodReadsSpider(scrapy.Spider):
         # encode reviews data in json format
         book_reviews = self.get_reviews_json(response.xpath("//input[@id='book_id']/@value").get())
 
+        # get book description
+        try:
+        	description = "\n".join(response.xpath("//div[@id='description']/span")[-1].xpath("text()").getall())
+        except:
+        	description = ""
+
+
         yield {
             'id': response.xpath("//input[@id='book_id']/@value").get(),
             'url': response.request.url,
             'title': response.xpath("//h1[@id='bookTitle']/text()").get().strip(),
             'author': response.xpath("//div[@id='bookAuthors']//a//span/text()").get(),
             'rating': book_meta.xpath("//span[@itemprop='ratingValue']/text()").get().strip(),
-            'description': self.get_text_by_xpath(response, "//div[@id='description']/span/text()", -1),
+            'description': description,
             'reviews': book_reviews
         }
 
@@ -136,12 +143,12 @@ class GoodReadsSpider(scrapy.Spider):
         }]
 
 
-    # Get all comments
+    # Get all reviews
     def get_reviews_json(self, book_id):
         print("\t-> Reading reviews for book_id ", book_id)
         res = []
 
-        # Count how many pages of comments
+        # Count how many pages of reviews
         reviews_response = self.get_response("https://www.goodreads.com/book/reviews/{book_id}?hide_last_page=true&utf8=\%E2\%9C\%93&language_code=".format(book_id=book_id))
         try:
             total_pages_count = int(reviews_response.xpath("//a[@href='#']/text()")[-2].get())
@@ -153,7 +160,7 @@ class GoodReadsSpider(scrapy.Spider):
             res += self.review_selector_to_json(review)
 
 
-        # Iterate over each page to get comments
+        # Iterate over each page to get reviews
         for review_page in range(2, total_pages_count + 1):
             reviews_response = self.get_response("https://www.goodreads.com/book/reviews/{book_id}?hide_last_page=true&utf8=\%E2\%9C\%93&language_code=&page={page}"
                 .format(book_id=book_id, page=review_page))
