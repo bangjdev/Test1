@@ -8,7 +8,9 @@ class WikiDictSpider(scrapy.Spider):
         "https://vi.wiktionary.org/w/index.php?title=Th%E1%BB%83_lo%E1%BA%A1i:T%C3%ADnh_t%E1%BB%AB_ti%E1%BA%BFng_Vi%E1%BB%87t",
         "https://en.wiktionary.org/w/index.php?title=Category:English_verbs",
         "https://en.wiktionary.org/w/index.php?title=Category:English_adjectives",
-        "https://en.wiktionary.org/w/index.php?title=Category:English_conjunctions"
+        "https://en.wiktionary.org/w/index.php?title=Category:English_conjunctions",
+        "https://en.wiktionary.org/w/index.php?title=Category:English_adverbs",
+        "https://en.wiktionary.org/w/index.php?title=Category:English_nouns"
     ]
 
 
